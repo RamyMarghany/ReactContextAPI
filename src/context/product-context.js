@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 
 // Create a product context with initial state is product with an empty array
-export const ProductContext = React.createContext({ products: [] });
+export const ProductContext = React.createContext({
+  products: [],
+  toggleFav: (id) => {},
+});
 
 export default (props) => {
   const [productsList, setProductsList] = useState([
@@ -31,9 +34,23 @@ export default (props) => {
     },
   ]);
 
+  const toggleFav = (id) => {
+    const selectedId = productsList.findIndex((p) => p.id === id);
+    const newFavState = !productsList[selectedId].isFavorite;
+    const updatedList = [...productsList];
+    updatedList[selectedId] = {
+      ...productsList[selectedId],
+      isFavorite: newFavState,
+    };
+    setProductsList(updatedList);
+    return productsList;
+  };
+
   return (
     // whenever the state is updated here, the context will get a new value, and each child is listening for this context will get that new value
-    <ProductContext.Provider value={{ products: productsList }}>
+    <ProductContext.Provider
+      value={{ products: productsList, toggleFav: toggleFav }}
+    >
       {props.children}
     </ProductContext.Provider>
   );
